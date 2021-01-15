@@ -5,10 +5,9 @@ import json
 
 app = Flask(__name__)
 
-PASSWORD = "pwd"
+PASSWORD = "PASSWORD"
 API_VERSION = '2021-01'
 SHOP_URL = "flexstock-selim.myshopify.com"
-DATABASE = './database.db'
 
 # Simulate a database. Products stored in memory in this variable as a db.
 PRODUCTS_DB = ShopifyClient(PASSWORD, API_VERSION, SHOP_URL).get_products()
@@ -21,7 +20,7 @@ def index():
 
 #Every time a product is added at shopify we can add it here
 @app.route('/product_creation_webhook', methods=['POST'])
-def add_product():
+def handle_new_shopify_product():
     client = ShopifyClient(PASSWORD, API_VERSION, SHOP_URL)
     inventory_location_id = client.get_inventory_location_id()
     json_params = request.get_json()
@@ -41,7 +40,7 @@ def add_product():
 
     return jsonify(product=product.__dict__, error=None)
 
-
+#This is should be called from FlexStock APP
 @app.route('/increase_inventory', methods=['POST'])
 def increase_inventory():
     client = ShopifyClient(PASSWORD, API_VERSION, SHOP_URL)
@@ -69,7 +68,7 @@ def increase_inventory():
 #and run ./ngrok http 5000 from the command line
 #ngrok only support http, shopify require https
 @app.route('/order_webhook', methods=['POST'])
-def receive_order():
+def handle_order_received():
     client = ShopifyClient(PASSWORD, API_VERSION, SHOP_URL)
     json_params = request.get_json()
     product_id = json_params.get("variant_id")

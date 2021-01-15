@@ -9,9 +9,9 @@ class ShopifyClient:
 
     def get_products(self):
         inventory_location_id = self.get_inventory_location_id()
-        variants = shopify.Variant.find()
+        products = shopify.Product.find()
 
-        flex_stock_products = [FlexStockProduct(variant.id, variant.title, variant.inventory_quantity, variant.inventory_item_id, inventory_location_id) for variant in variants]
+        flex_stock_products = [FlexStockProduct(v.id, " ".join([p.title, v.title]), v.inventory_quantity, v.inventory_item_id, inventory_location_id) for p in products for v in p.variants]
 
         return flex_stock_products
 
